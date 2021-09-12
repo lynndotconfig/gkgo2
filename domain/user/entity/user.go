@@ -1,5 +1,7 @@
 package entity
 
-// type UserTab struct {
-// 	ID `json:""`
-// }
+type UserEntity struct {
+	ID uint64 `json:"id"`
+	Username string `json:"username"`
+	Email string `json:"email"`
+}
