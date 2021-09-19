@@ -23,7 +23,7 @@ type (
 )
 
 func (p *Error) Error() string {
-	return fmt.Sprintf("celestial celestialErr, location: %s, celestialErr: %s", p.Location, p.cause.Error())
+	return fmt.Sprintf("gkgo2 gkgo2Err, location: %s, celestialErr: %s", p.Location, p.cause.Error())
 }
 
 func (p *Error) CodeMsg() *Code {
