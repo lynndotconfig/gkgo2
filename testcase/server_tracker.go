@@ -47,10 +47,11 @@ func (a *App) Handle(w http.ResponseWriter, r *http.Request) {
 
 func main () {
 	// 启动一个服务
+	ctx := context.Background()
 	var a App
 	
 	// 关闭服务
 	
 	// 等待所有事件的协程退出
-	a.t.Shutdown()
+	a.t.Shutdown(ctx)
 }
