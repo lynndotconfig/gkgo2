@@ -2,34 +2,48 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/pkg/errors"
-	"log"
 	"net/http"
-	"sync"
 	"time"
 )
 
 type Tracker struct {
-	wg sync.WaitGroup
+	ch chan string
+	stop chan struct{}
 }
 
-func (t *Tracker) Event(data string) {
-	t.wg.Add(1)
-	go func() {
-		defer t.wg.Done()
-		time.Sleep(time.Millisecond)
-		log.Printf(data)
-	}()
+func NewTracker() *Tracker {
+	return &Tracker{
+		ch:   make(chan string, 10),
+	}
+}
+
+func (t *Tracker) Event(ctx context.Context, data string) error {
+	select {
+	case t.ch <- data:
+		return nil
+	case <- ctx.Done():
+		return ctx.Err()
+	}
+}
+
+func (t *Tracker) Run() {
+	for data := range t.ch {
+		time.Sleep(1 * time.Second)
+		fmt.Println(data)
+	}
+	t.stop <- struct{}{}
 }
 
 func (t *Tracker) Shutdown(ctx context.Context) error {
-	ch := make(chan struct{})
-	go func() {
-		t.wg.Wait()
-		close(ch)
-	}()
+	// 写的一方决定什么时候，channel可以关闭
+	// 关闭写channle
+	close(t.ch)
+	
+	// 等待runner发会关闭信号
 	select {
-	case <-ch:
+	case <-t.stop:
 		return nil
 	case <-ctx.Done():
 		return errors.New("timeout")
@@ -42,16 +56,18 @@ type App struct {
 
 func (a *App) Handle(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
-	a.t.Event("created")
 }
 
 func main () {
-	// 启动一个服务
+	tr := NewTracker()
+	go tr.Run()
 	ctx := context.Background()
-	var a App
-	
-	// 关闭服务
-	
-	// 等待所有事件的协程退出
-	a.t.Shutdown(ctx)
+	_ = tr.Event(ctx, "test1")
+	_ = tr.Event(ctx, "test2")
+	_ = tr.Event(ctx, "test3")
+	_ = tr.Event(ctx, "test4")
+	time.Sleep(3 * time.Second)
+	ctx, cancel := context.WithDeadline(ctx, time.Now().Add(5 * time.Second))
+	defer cancel()
+	tr.Shutdown(ctx)
 }
