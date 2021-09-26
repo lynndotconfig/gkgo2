@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package api.admin;
+
+option go_package = "github.com/lynndotconfig/gkgo2/api/admin;admin";
+option java_multiple_files = true;
+option java_package = "api.admin";
+
+service Team {
+	rpc CreateTeam (CreateTeamRequest) returns (CreateTeamReply);
+	rpc UpdateTeam (UpdateTeamRequest) returns (UpdateTeamReply);
+	rpc DeleteTeam (DeleteTeamRequest) returns (DeleteTeamReply);
+	rpc GetTeam (GetTeamRequest) returns (GetTeamReply);
+	rpc ListTeam (ListTeamRequest) returns (ListTeamReply);
+}
+
+message CreateTeamRequest {}
+message CreateTeamReply {}
+
+message UpdateTeamRequest {}
+message UpdateTeamReply {}
+
+message DeleteTeamRequest {}
+message DeleteTeamReply {}
+
+message GetTeamRequest {}
+message GetTeamReply {}
+
+message ListTeamRequest {}
+message ListTeamReply {}

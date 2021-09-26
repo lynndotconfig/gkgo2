@@ -4,13 +4,14 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
+	"github.com/lynndotconfig/gkgo2/api/admin"
 	v1 "github.com/lynndotconfig/gkgo2/api/helloworld/v1"
 	"github.com/lynndotconfig/gkgo2/internal/conf"
 	service2 "github.com/lynndotconfig/gkgo2/internal/service"
 )
 
 // NewGRPCServer new a gRPC server.
-func NewGRPCServer(c *conf.Server, greeter *service2.GreeterService, logger log.Logger) *grpc.Server {
+func NewGRPCServer(c *conf.Server, greeter *service2.GreeterService, account *service2.AccountService,logger log.Logger) *grpc.Server {
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			recovery.Recovery(),
@@ -27,5 +28,6 @@ func NewGRPCServer(c *conf.Server, greeter *service2.GreeterService, logger log.
 	}
 	srv := grpc.NewServer(opts...)
 	v1.RegisterGreeterServer(srv, greeter)
+	admin.RegisterAccountServer(srv, account)
 	return srv
 }
