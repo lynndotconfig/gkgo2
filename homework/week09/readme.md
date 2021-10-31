@@ -23,5 +23,19 @@
 3、可以在数据包之间设置边界，如添加特殊符号，这样，接收端通过这个边界就可以将不同的数据包拆分开。
 
 ## Q2. 实现一个从 socket connection 中解码出 goim 协议的解码器。##
-见本目录代码
 
+GOIM协议如下：
+
+
+| 参数名     | 必选  | 类型 | 说明       |
+| :-----     | :---  | :--- | :---       |
+| package length        | true  | int32 bigendian | 包长度 |
+| header Length         | true  | int16 bigendian    | 包头长度 |
+| ver        | true  | int16 bigendian    | 协议版本 |
+| operation          | true | int32 bigendian | 协议指令 |
+| seq         | true | int32 bigendian | 序列号 |
+| body         | false | binary | $(package lenth) - $(header length) |
+
+
+代码见：
+https://github.com/lynndotconfig/gkgo2/blob/main/homework/week09/protocol/goim.go
